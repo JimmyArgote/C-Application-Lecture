@@ -1,30 +1,38 @@
 #include <stdio.h>
 #include <conio.h>
 #include <time.h>
-    //vari·veis
+    //vari√°veis
     int i, op, num_seat, flag;
     /*Criando a struct */
-	struct ficha_de_aluno
+	struct ficha_do_participante
 	{
-	    int assento;
-		char nome[50];
-		char dateStr[9];
-        char timeStr[9];
+	    int     codv;
+	    char    name[50];
+	    char    d_n[9];
+	    char    s[8];
+        int     rg;
+        char    mail[30];
+        char    cvd[2]; //convidado -> sim ou n√£o (m√°ximos 10 convidados)
+        char    spec_seat[2]; //Lugar especial -> sim ou n√£o (m√°ximos 3)
+	    int     reserve_seat;
+
+		char    dateStr[9];
+        char    timeStr[9];
 	};
 
-    struct ficha_de_aluno aluno[50];
+    struct ficha_do_participante aluno[50];
 
 int main(void)
 {
-    //listar opÁıes
+    //listar op√ß√µes
     optionsList();
 
-    //Executar OpÁ„o
+    //Executar Op√ß√£o
     optionsExecute();
 }
 
 
-//Chamar opÁıes de menu
+//Chamar op√ß√µes de menu
 int optionsList()
 {
     printf("\n\n0- Sair >>\n");
@@ -65,30 +73,30 @@ int optionsExecute()
 
 
 
-//FunÁao para registrar um participante
+//Fun√ßao para registrar um participante
 int reserveSeat()
 {
 	//struct ficha_de_aluno vetorAluno[10];
 
-	/*Criando a vari·vel aluno que ser· do
+	/*Criando a vari√°vel aluno que ser√° do
 	tipo struct ficha_de_aluno */
 	//struct ficha_de_aluno aluno;
 
-	for(i=0; i<10; i++)
+	for(i=0; i<2; i++)
     {
         printf("\n---------- Cadastro de Assento -----------\n\n\n");
         printf("Assento ......: ");
-        scanf("%d", &aluno[i].assento);
+        scanf("%d", &aluno[i].codv);
         printf("Nome do aluno ......: ");
         fflush(stdin);
 
         /*usaremos o comando fgets() para ler strings, no caso o nome
         do aluno e a disciplina
         fgets(variavel, tamanho da string, entrada)
-        como estamos lendo do teclado a entrada È stdin (entrada padr„o),
-        porÈm em outro caso, a entrada tambem poderia ser um arquivo */
+        como estamos lendo do teclado a entrada √© stdin (entrada padr√£o),
+        por√©m em outro caso, a entrada tambem poderia ser um arquivo */
 
-        fgets(aluno[i].nome, 40, stdin);
+        fgets(aluno[i].name, 40, stdin);
 
         // pega a data atual
         _strdate(  aluno[i].dateStr);
@@ -101,13 +109,25 @@ int reserveSeat()
         system("cls");
     }
 
-	printf("\n\n --------- Ticket Informativo ---------\n\n");
+    printf("\n\n");
+
+    printf("                    +------------------------------------------------+\n");
+	printf("                    |           Ticket Informativo                   |\n");
+	printf("                    +------------------------------------------------+\n");
     //printf("Dados importantes para entrada na palestra!\n");
-    printf("        Assento .....: %d \n", aluno[i+1].assento);
-	printf("        Nome ...........: %s", aluno[i+1].nome);
-	printf("        Data atual do sistema e: %s \n", aluno[i+1].dateStr);
-	printf("        Hora atual do sistema e: %s \n", aluno[i+1].timeStr);
-	printf("\n -------------------------------------- \n\n");
+    printf("            		+------------------------------------------------+\n");
+    printf("            		|    Assento .....: %d                           |\n", aluno[i+1].codv);
+	printf("            		|    Nome ...........: %s                        |\n", aluno[i+1].name);
+	printf("            		|    Assento .....: %d                           |\n", aluno[i+1].d_n);
+	printf("            		|    Nome ...........: %s                        |\n", aluno[i+1].s);
+	printf("            		|    Assento .....: %d                           |\n", aluno[i+1].rg);
+	printf("            		|    Nome ...........: %s                        |\n", aluno[i+1].mail);
+	printf("            		|    Assento .....: %s                           |\n", aluno[i+1].cvd);
+	printf("            		|    Nome ...........: %s                        |\n", aluno[i+1].spec_seat);
+	printf("            		|    Nome ...........: %d                        |\n", aluno[i+1].reserve_seat);
+	printf("            		|    Data atual do sistema e: %s                 |\n", aluno[i+1].dateStr);
+	printf("            		|    Hora atual do sistema e: %s                 |\n", aluno[i+1].timeStr);
+	printf("            		+------------------------------------------------+\n");
 
 	getch();
 	//return(0);
@@ -133,6 +153,21 @@ listAllSeat()
             printf("\n%d: Livre", aluno[i+1].assento);
         }
     }
+
+int columns, rows, number;
+rows =1;
+
+do{
+    columns=0;
+    do{
+        printf("%d\t", columns*10+rows);
+
+    }while(columns++ <9);
+    printf("\n");
+
+}while(rows++ <10);
+
+    return 0;
 }
 
 
@@ -140,4 +175,3 @@ verifyEmpty()
 {
 
 }
-
