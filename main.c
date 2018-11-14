@@ -4,16 +4,19 @@
 #include <windows.h>
 #include <unistd.h>
 #include "login.c"
+#include "menu.c"
 
 //constantes
-#define TIMEOUT 30 //segundos
-#define TIME_SLEEP 3000 //30000ms == 30s
-#define ATTEMPS 3
+#define TIMEOUT          30 //segundos
+#define TIME_SLEEP       3000 //30000ms == 30segundos
+#define ATTEMPS          3 //numero de tentativas autenticar login e senha
 #define G_PARTICIPANTE   1
 #define G_CONVIDADO      2
 #define SORTEIO          3
 #define ENVIAR_EMAIL     4
 #define SAIR             5
+
+#define QTD_MAX          180 /*capacidade de assentos na palestra*/
 
 
     //login
@@ -28,21 +31,25 @@ struct administrator
     int i, op, num_seat, flag;
     /*Criando a struct */
 	struct ficha_do_participante
-	{
-	    int     codv;
-	    char    name[50];
-	    char    d_n[9];
-	    char    s[8];
-        int     rg;
-        char    mail[30];
-        char    cvd[2]; //convidado -> sim ou não (máximos 10 convidados)
-        char    spec_seat[2]; //Lugar especial -> sim ou não (máximos 3)
-	    int     reserve_seat;
-		char    dateStr[9];
-        char    timeStr[9];
-	};
+{
+    int     b;
+    int     flag;
+    int     adm;
+    int     cod_visitante;
+    char    nome[50];
+    char    data_nasc[9];
+    char    sexo[8];
+    char    rg[10];
+    char    email[30];
+    int     convidado; //convidado -> sim ou não (máximos 10 convidados)
+    int     assento_especial; //Lugar especial -> sim ou não (máximos 3)
+    int     assento_reservado;
+	char    dateStr[9];
+    char    timeStr[9];
+};//aluno[QTD_MAX];
 
-    struct ficha_do_participante aluno[50];
+
+    struct ficha_do_participante participant[QTD_MAX];
 
 int main(int argc, char * argv[])
 {
@@ -144,7 +151,7 @@ int reserveSeat()
     {
         printf("\n---------- Cadastro de Assento -----------\n\n\n");
         printf("Assento ......: ");
-        scanf("%d", &aluno[i].codv);
+        scanf("%d", &participant[i].cod_visitante);
         printf("Nome do aluno ......: ");
         fflush(stdin);
 
@@ -154,12 +161,12 @@ int reserveSeat()
         como estamos lendo do teclado a entrada é stdin (entrada padrão),
         porém em outro caso, a entrada tambem poderia ser um arquivo */
 
-        fgets(aluno[i].name, 40, stdin);
+        fgets(participant[i].nome, 40, stdin);
 
         // pega a data atual
-        _strdate(  aluno[i].dateStr);
+        _strdate(  participant[i].dateStr);
         // pega a hora atual
-        _strtime( aluno[i].timeStr );
+        _strtime( participant[i].timeStr );
 
         //getch();
         printf("\nASSENTO RESERVADO COM SUCESSO!\n");
@@ -174,17 +181,17 @@ int reserveSeat()
 	printf("                    +------------------------------------------------+\n");
     //printf("Dados importantes para entrada na palestra!\n");
     printf("            		+------------------------------------------------+\n");
-    printf("            		|    Assento .....: %d                           |\n", aluno[i+1].codv);
-	printf("            		|    Nome ...........: %s                        |\n", aluno[i+1].name);
-	printf("            		|    Assento .....: %d                           |\n", aluno[i+1].d_n);
-	printf("            		|    Nome ...........: %s                        |\n", aluno[i+1].s);
-	printf("            		|    Assento .....: %d                           |\n", aluno[i+1].rg);
-	printf("            		|    Nome ...........: %s                        |\n", aluno[i+1].mail);
-	printf("            		|    Assento .....: %s                           |\n", aluno[i+1].cvd);
-	printf("            		|    Nome ...........: %s                        |\n", aluno[i+1].spec_seat);
-	printf("            		|    Nome ...........: %d                        |\n", aluno[i+1].reserve_seat);
-	printf("            		|    Data atual do sistema e: %s                 |\n", aluno[i+1].dateStr);
-	printf("            		|    Hora atual do sistema e: %s                 |\n", aluno[i+1].timeStr);
+    printf("            	    |    Codigo do Participante .....: %d            \n", participant[i+1].cod_visitante);
+	printf("            	    |    Nome ...........: %s                        \n", participant[i+1].nome);
+	printf("            	    |    Data de nascimento .....: %d                \n", participant[i+1].data_nasc);
+	printf("            	    |    Sexo ...........: %s                        \n", participant[i+1].sexo);
+	printf("            	    |    RG .....: %d                                \n", participant[i+1].rg);
+	printf("            	    |    Email ...........: %s                       \n", participant[i+1].email);
+	printf("            	    |    Convidado .....: %s                         \n", participant[i+1].convidado);
+	printf("            	    |    Assento Especial ...........: %s            \n", participant[i+1].assento_especial);
+	printf("            	    |    Assento Reservado ...........: %d           \n", participant[i+1].assento_reservado);
+	printf("            	    |    Data atual do sistema e: %s                 \n", participant[i+1].dateStr);
+	printf("            	    |    Hora atual do sistema e: %s                 \n", participant[i+1].timeStr);
 	printf("            		+------------------------------------------------+\n");
 
 	getch();
@@ -202,13 +209,13 @@ listAllSeat()
 
     for(i=0; i<10; i++)
     {
-        if(aluno[i].assento != 0)
+        if(participant[i].assento_reservado != 0)
         {
-            printf("\n%d: Ocupado", aluno[i+1].assento);
+            printf("\n%d: Ocupado", participant[i+1].assento_reservado);
         }
         else
         {
-            printf("\n%d: Livre", aluno[i+1].assento);
+            printf("\n%d: Livre", participant[i+1].assento_reservado);
         }
     }
 
