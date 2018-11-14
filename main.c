@@ -1,7 +1,30 @@
 #include <stdio.h>
 #include <conio.h>
 #include <time.h>
-    //variáveis
+#include <windows.h>
+#include <unistd.h>
+#include "login.c"
+
+//constantes
+#define TIMEOUT 30 //segundos
+#define TIME_SLEEP 3000 //30000ms == 30s
+#define ATTEMPS 3
+#define G_PARTICIPANTE   1
+#define G_CONVIDADO      2
+#define SORTEIO          3
+#define ENVIAR_EMAIL     4
+#define SAIR             5
+
+
+    //login
+struct administrator
+{
+    char login[30];
+    char password[30];
+    int attempts;
+};
+    struct administrator admin;
+
     int i, op, num_seat, flag;
     /*Criando a struct */
 	struct ficha_do_participante
@@ -15,15 +38,50 @@
         char    cvd[2]; //convidado -> sim ou não (máximos 10 convidados)
         char    spec_seat[2]; //Lugar especial -> sim ou não (máximos 3)
 	    int     reserve_seat;
-
 		char    dateStr[9];
         char    timeStr[9];
 	};
 
     struct ficha_do_participante aluno[50];
 
-int main(void)
+int main(int argc, char * argv[])
 {
+    while(op != SAIR)
+    {
+        do
+        {
+            //true;
+            int authenticate;
+            authenticate = logar(admin.login, admin.password);
+
+            if( authenticate == 1 )
+            {
+                menu(); // se autenticado chama a função menu
+            }
+            else
+            {
+                //esperar 30 segundos para tentar novamente
+
+                admin.attempts++;
+            }
+        }while(admin.attempts <= ATTEMPS); //ENQUANTO NUMERO DE TENTATIVAS FOR <= 3 REPITA AS INSTRUÇÕES DO{}
+
+        if(admin.attempts == ATTEMPS)
+        {
+            admin.attempts = 0;
+            printf("Você errou nas 3 tentativas!\n");
+            printf("Espere 30 Segundo para tentar novamente!!!\n");
+
+            Sleep(TIME_SLEEP);
+            if( timeout(TIMEOUT) == 0 )
+            {
+                printf("Time Out\n");
+                return 0;
+            }
+        }
+
+    }
+
     //listar opções
     optionsList();
 
