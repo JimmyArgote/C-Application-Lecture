@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <windows.h>
 #include <unistd.h>
+#include <string.h>
+//#include <iostream>
+//#include <cstdlib>
 #include "login.c"
 #include "menu.c"
 
@@ -18,15 +22,15 @@
 
 #define QTD_MAX          180 /*capacidade de assentos na palestra*/
 
-
+//typedef struct administrator Admin;
     //login
-struct administrator
+typedef struct
 {
     char login[30];
     char password[30];
     int attempts;
-};
-    struct administrator admin;
+}administrator;
+    //struct administrator admin;
 
     int i, op, num_seat, flag;
     /*Criando a struct */
@@ -41,42 +45,104 @@ struct administrator
     char    sexo[8];
     char    rg[10];
     char    email[30];
-    int     convidado; //convidado -> sim ou não (máximos 10 convidados)
-    int     assento_especial; //Lugar especial -> sim ou não (máximos 3)
+    int     convidado; //convidado -> sim ou n�o (m�ximos 10 convidados)
+    int     assento_especial; //Lugar especial -> sim ou n�o (m�ximos 3)
     int     assento_reservado;
 	char    dateStr[9];
     char    timeStr[9];
 };//aluno[QTD_MAX];
+
+int authLogin;
+int authPassword;
+char login[30], password[30];
+
+char getAuthParams(char l, char password)
+{
+
+}
 
 
     struct ficha_do_participante participant[QTD_MAX];
 
 int main(int argc, char * argv[])
 {
+    //pAdmin *adm;
+    //adm = &administrator;
+
+    //(*adm).login= "jimmy";
+    //(*adm).password = "12345";
+    //(*adm).attemps = 0;
+
+    //pAdmin->login= "jimmy";
+    //pAdmin->password = "12345";
+
+    administrator Admin;
+    administrator *pAdmin = &Admin;
+
+    //char *c;
+    //c = &Admin.login;
+
+    strcpy(pAdmin->login, "jimmy");
+    strcpy(pAdmin->password, "Abc");
+
+
+
+    //Admin.login = "jimmy";
+    //Admin.password = "teste";
+    pAdmin->attempts = 0;
+
     while(op != SAIR)
     {
         do
         {
             //true;
-            int authenticate;
-            authenticate = logar(admin.login, admin.password);
 
-            if( authenticate == 1 )
+            printf("\nDigite seu Login ...: ");
+            gets(login);
+            printf("\nDigite sua Senha ...: ");
+            //fgets(password);
+            gets(password);
+
+            //system("read password");
+
+            //authenticate = logar(login, password);
+
+            authLogin = strcmp(login, pAdmin->login);
+            authPassword = strcmp(password, pAdmin->password);
+
+            printf("L: %d\nS: %d\n\n", authLogin, authPassword);
+
+            printf("login: %s\n senha: %s\n", login, password);
+            printf("login: %s\n senha: %s\n", pAdmin->login, pAdmin->password);
+
+            if( (authLogin == 0) && (authPassword == 0) )
+            //if( ((strcmp(login, pAdmin->login)) && (strcmp(password, pAdmin->password))) == 0 )
+            //if( !((authLogin && authPassword) != 0) )
             {
-                menu(); // se autenticado chama a função menu
+                printf("\nteste");
+                getche();
+                //menu_inicial(); // se autenticado chama a funcao menu
+                while(op != SAIR)
+                {
+                    if(op != SAIR)
+                    {
+                        int re_opcao;
+                        op = menu_inicial(re_opcao); // se autenticado chama a funcao menu
+                    }
+                }
             }
             else
             {
                 //esperar 30 segundos para tentar novamente
 
-                admin.attempts++;
+                pAdmin->attempts++;
             }
-        }while(admin.attempts <= ATTEMPS); //ENQUANTO NUMERO DE TENTATIVAS FOR <= 3 REPITA AS INSTRUÇÕES DO{}
+        }while(pAdmin->attempts <= ATTEMPS); //ENQUANTO NUMERO DE TENTATIVAS FOR <= 3 REPITA AS INSTRU��ES DO{}
 
-        if(admin.attempts == ATTEMPS)
+        if(pAdmin->attempts == ATTEMPS)
         {
-            admin.attempts = 0;
-            printf("Você errou nas 3 tentativas!\n");
+            pAdmin->attempts = 0;
+            printf("Voc� errou nas 3 tentativas!\n");
             printf("Espere 30 Segundo para tentar novamente!!!\n");
 
             Sleep(TIME_SLEEP);
@@ -89,15 +155,15 @@ int main(int argc, char * argv[])
 
     }
 
-    //listar opções
+    //listar op��es
     optionsList();
 
-    //Executar Opção
+    //Executar Op��o
     optionsExecute();
 }
 
 
-//Chamar opções de menu
+//Chamar op��es de menu
 int optionsList()
 {
     printf("\n\n0- Sair >>\n");
@@ -138,12 +204,12 @@ int optionsExecute()
 
 
 
-//Funçao para registrar um participante
+//Fun�ao para registrar um participante
 int reserveSeat()
 {
 	//struct ficha_de_aluno vetorAluno[10];
 
-	/*Criando a variável aluno que será do
+	/*Criando a vari�vel aluno que ser� do
 	tipo struct ficha_de_aluno */
 	//struct ficha_de_aluno aluno;
 
@@ -158,8 +224,8 @@ int reserveSeat()
         /*usaremos o comando fgets() para ler strings, no caso o nome
         do aluno e a disciplina
         fgets(variavel, tamanho da string, entrada)
-        como estamos lendo do teclado a entrada é stdin (entrada padrão),
-        porém em outro caso, a entrada tambem poderia ser um arquivo */
+        como estamos lendo do teclado a entrada � stdin (entrada padr�o),
+        por�m em outro caso, a entrada tambem poderia ser um arquivo */
 
         fgets(participant[i].nome, 40, stdin);
 
