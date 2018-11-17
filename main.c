@@ -5,22 +5,25 @@
 #include <windows.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 //#include <iostream>
 //#include <cstdlib>
 #include "login.c"
 #include "menu.c"
 
 //constantes
-#define TIMEOUT          30 //segundos
-#define TIME_SLEEP       3000 //30000ms == 30segundos
-#define ATTEMPS          3 //numero de tentativas autenticar login e senha
-#define G_PARTICIPANTE   1
-#define G_CONVIDADO      2
-#define SORTEIO          3
-#define ENVIAR_EMAIL     4
-#define SAIR             5
+#define TIMEOUT          5  //segundos
+#define TIME_SLEEP       10 //30000ms == 30segundos
+#define ATTEMPS          3  //numero de tentativas autenticar login e senha
+#define G_PARTICIPANTE   1  //OP gerenciar participante
+#define G_CONVIDADO      2  //OP Gerencial convidado
+#define SORTEIO          3  //OP Sorteio
+#define ENVIAR_EMAIL     4  //OP Enviar Email
+#define SAIR             5  //OP Sair
 
-#define QTD_MAX          180 /*capacidade de assentos na palestra*/
+/*capacidade de assentos na palestra*/
+#define QTD_L       8  /* LINHAS */
+#define QTD_C      19 /* Colunas */
 
 //typedef struct administrator Admin;
     //login
@@ -32,9 +35,9 @@ typedef struct
 }administrator;
     //struct administrator admin;
 
-    int i, op, num_seat, flag;
+    int i, op, num_seat, flag, re_opcao, l, c;
     /*Criando a struct */
-	struct ficha_do_participante
+struct participant
 {
     int     b;
     int     flag;
@@ -50,7 +53,22 @@ typedef struct
     int     assento_reservado;
 	char    dateStr[9];
     char    timeStr[9];
-};//aluno[QTD_MAX];
+};
+    // sP => struct-matriz do tipo participant
+    struct participant sP[QTD_L][QTD_C];
+
+    //P sP;
+//ficha_do_participante[QTD_L][QTD_L];
+
+//struct ficha_do_participante participant[QTD_L][QTD_C];
+
+    //P sera do tipo struct participant
+    //participant P[QTD_L][QTD_C];
+
+    //*pP será do tipo struct ponteiro
+    //participant *pP = &P;
+
+
 
 int authLogin;
 int authPassword;
@@ -61,10 +79,8 @@ char getAuthParams(char l, char password)
 
 }
 
-
-    struct ficha_do_participante participant[QTD_MAX];
-
-int main(int argc, char * argv[])
+//int main(int argc, char * argv[])
+int main(void)
 {
     //pAdmin *adm;
     //adm = &administrator;
@@ -76,14 +92,18 @@ int main(int argc, char * argv[])
     //pAdmin->login= "jimmy";
     //pAdmin->password = "12345";
 
+    /* Ponteiro para struct participant */
+
     administrator Admin;
     administrator *pAdmin = &Admin;
+
+    zerarAssento();
 
     //char *c;
     //c = &Admin.login;
 
-    strcpy(pAdmin->login, "jimmy");
-    strcpy(pAdmin->password, "Abc");
+    strcpy(pAdmin->login, "j");
+    strcpy(pAdmin->password, "j");
 
 
 
@@ -93,13 +113,17 @@ int main(int argc, char * argv[])
 
     while(op != SAIR)
     {
-        do
+        //ENQUANTO NUMERO DE TENTATIVAS FOR MENOR OU IGUAL A 3 ? REPITA
+        while(pAdmin->attempts <= 3)
         {
             //true;
-
-            printf("\nDigite seu Login ...: ");
+            //getch();
+            printf("+-----------------------------------------------------------------------------+\n");
+            printf("|                                 FACA LOGIN                                  |\n");
+            printf("+-----------------------------------------------------------------------------+\n");
+            printf("\nDigite seu Login ==> ");
             gets(login);
-            printf("\nDigite sua Senha ...: ");
+            printf("\nDigite sua Senha ==> ");
             //fgets(password);
             gets(password);
 
@@ -107,202 +131,303 @@ int main(int argc, char * argv[])
 
             //authenticate = logar(login, password);
 
+
+            //RETORNA 0 SE AS STRINGS SÃO IGUAIS
             authLogin = strcmp(login, pAdmin->login);
             authPassword = strcmp(password, pAdmin->password);
 
-            printf("L: %d\nS: %d\n\n", authLogin, authPassword);
+            //printf("L: %d\nS: %d\n\n", authLogin, authPassword);
 
-            printf("login: %s\n senha: %s\n", login, password);
-            printf("login: %s\n senha: %s\n", pAdmin->login, pAdmin->password);
+            //printf("login: %s\n senha: %s\n", login, password);
+            //printf("login: %s\n senha: %s\n", pAdmin->login, pAdmin->password);
 
-            if( (authLogin == 0) && (authPassword == 0) )
             //if( ((strcmp(login, pAdmin->login)) && (strcmp(password, pAdmin->password))) == 0 )
             //if( !((authLogin && authPassword) != 0) )
+
+            //SE AS VARIAVEIS CONTIVEREM VALOR 0, ENTAO AUTENTICARÁ LOGIN E SENHA
+            if( (authLogin == 0) && (authPassword == 0) )
             {
-                printf("\nteste");
-                getche();
-                //menu_inicial(); // se autenticado chama a funcao menu
-                while(op != SAIR)
+                do
                 {
+                    //if(op==0) getch();
+                    op = 0;
+
                     if(op != SAIR)
                     {
                         int re_opcao;
-                        op = menu_inicial(re_opcao); // se autenticado chama a funcao menu
-                    }
-                }
-            }
+                        //if(isdigit)
+                        op = menu_inicial(); // se autenticado chama a funcao menu
+
+                        switch(op)
+                        {
+                            case 1 :
+                                printf("\nGerencia participante!\n");
+                                    //incluir_visitante();
+
+                                    re_opcao = menu_visitante();
+
+                                    switch(re_opcao)
+                                    {
+                                        case 1 :
+                                                incluir_visitante();
+                                            break;
+
+                                        case 2 :
+                                                excluir_visitante();
+                                            break;
+
+                                        case 3 :
+                                                lista_assentos_livres();
+                                            break;
+
+                                        case 4 :
+                                                lista_assentos_ocupados();
+                                            break;
+
+                                        case 5 :
+                                                lista_tds_assentos();
+                                            break;
+
+                                        case 6 :
+                                            system("cls");
+                                            // retornar ao menu inicial
+                                            continue;
+
+                                        default :
+                                        printf("\nOpcao Invalidada!\n");
+                                        getch();
+                                        system("cls");
+                                    } //switch(re_opcao) MENU DE VISITANTE
+
+                                //getch();
+                            break;
+
+                            case 2 :
+                                printf("\nGerencia convidado!\n");
+                                    excluir_visitante();
+                                getch();
+                            break;
+
+                            case 3 :
+                                printf("\nFazer sorteio!\n");
+                                getch();
+                            break;
+
+                            case 4 :
+                                printf("\nEnvia Email!\n");
+                                getch();
+                            break;
+
+                            case 5 :
+                                printf("\nSair!\n");
+                                getchar();
+                                system("cls");
+                            break;
+
+                            default :
+                                printf("\nOpcao invalida!\n");
+                                break;
+                        } //switch(op) MENU INICIAL
+                    } //if(op != SAIR)
+
+                }while(op != SAIR);
+            } // admin LOGADO
             else
             {
-                //esperar 30 segundos para tentar novamente
-
                 pAdmin->attempts++;
-            }
-        }while(pAdmin->attempts <= ATTEMPS); //ENQUANTO NUMERO DE TENTATIVAS FOR <= 3 REPITA AS INSTRU��ES DO{}
 
-        if(pAdmin->attempts == ATTEMPS)
-        {
-            pAdmin->attempts = 0;
-            printf("Voc� errou nas 3 tentativas!\n");
-            printf("Espere 30 Segundo para tentar novamente!!!\n");
 
-            Sleep(TIME_SLEEP);
-            if( timeout(TIMEOUT) == 0 )
+                if((authLogin > 0) || (authPassword > 0) || (authLogin < 0) || (authPassword < 0))
+                {
+                    printf("\nLogin ou senha incorretos!\n");
+                    getch();
+                    //system("cls");
+                }
+
+                printf("\nTentativas: %d", pAdmin->attempts);
+                getch();
+                system("cls");
+            } // Errou SENHA
+
+            //se o numero de tentativas for = 3 entao esperar 30 segundos para tentar novamente
+            if(pAdmin->attempts == ATTEMPS)
             {
-                printf("Time Out\n");
-                return 0;
+                printf("\nVoce errou nas %d tentativas!\n", pAdmin->attempts);
+                printf("Espere %d Segundo para tentar novamente!!!\n", TIMEOUT);
+
+                Sleep(TIME_SLEEP);
+                //int time;
+                //time = timeout(TIMEOUT);
+                if(timeout(TIMEOUT) == 0)
+                {
+                    printf("\nTempo finalizado.\n");
+                }
+
+                pAdmin->attempts = 0;
             }
-        }
+
+        } //ENQUANTO NUMERO DE TENTATIVAS FOR <= 3 REPITA AS INSTRUÇÕES DO{}
 
     }
 
     //listar op��es
-    optionsList();
+    //optionsList();
 
     //Executar Op��o
-    optionsExecute();
-}
+    //optionsExecute();
+
+} // MAIN METODO PRINCIPAL
 
 
-//Chamar op��es de menu
-int optionsList()
-{
-    printf("\n\n0- Sair >>\n");
-    printf("1- Reservar Assento >>\n");
-    printf("2- Listar todos os Assentos  >>\n\n");
-    printf("Escolha uma opcao: \n");
-    scanf("%d", &op);
-}
+//Chamar opçoes de menu
 
-
-int optionsExecute()
-{
-    while(op != 0)
-    {
-        getch();
-        if(op == 1)
-        {
-            //Reservar Assento
-            reserveSeat();
-        }
-        if(op == 2)
-        {
-            system("cls");
-            listAllSeat();
-            //findBySeat();
-            getch();
-            system("cls");
-        }
-        printf("\n0- Sair >>\n");
-        printf("1- Reservar Assento >>\n");
-        printf("2- Procurar por Assento >>\n");
-        printf("Escolha uma opcao: \n");
-        scanf("%d", &op);
-
-        getch();
-    }
-}
-
-
+//options execute
 
 //Fun�ao para registrar um participante
-int reserveSeat()
-{
-	//struct ficha_de_aluno vetorAluno[10];
-
-	/*Criando a vari�vel aluno que ser� do
-	tipo struct ficha_de_aluno */
-	//struct ficha_de_aluno aluno;
-
-	for(i=0; i<2; i++)
-    {
-        printf("\n---------- Cadastro de Assento -----------\n\n\n");
-        printf("Assento ......: ");
-        scanf("%d", &participant[i].cod_visitante);
-        printf("Nome do aluno ......: ");
-        fflush(stdin);
-
-        /*usaremos o comando fgets() para ler strings, no caso o nome
-        do aluno e a disciplina
-        fgets(variavel, tamanho da string, entrada)
-        como estamos lendo do teclado a entrada � stdin (entrada padr�o),
-        por�m em outro caso, a entrada tambem poderia ser um arquivo */
-
-        fgets(participant[i].nome, 40, stdin);
-
-        // pega a data atual
-        _strdate(  participant[i].dateStr);
-        // pega a hora atual
-        _strtime( participant[i].timeStr );
-
-        //getch();
-        printf("\nASSENTO RESERVADO COM SUCESSO!\n");
-        getch();
-        system("cls");
-    }
-
-    printf("\n\n");
-
-    printf("                    +------------------------------------------------+\n");
-	printf("                    |           Ticket Informativo                   |\n");
-	printf("                    +------------------------------------------------+\n");
-    //printf("Dados importantes para entrada na palestra!\n");
-    printf("            		+------------------------------------------------+\n");
-    printf("            	    |    Codigo do Participante .....: %d            \n", participant[i+1].cod_visitante);
-	printf("            	    |    Nome ...........: %s                        \n", participant[i+1].nome);
-	printf("            	    |    Data de nascimento .....: %d                \n", participant[i+1].data_nasc);
-	printf("            	    |    Sexo ...........: %s                        \n", participant[i+1].sexo);
-	printf("            	    |    RG .....: %d                                \n", participant[i+1].rg);
-	printf("            	    |    Email ...........: %s                       \n", participant[i+1].email);
-	printf("            	    |    Convidado .....: %s                         \n", participant[i+1].convidado);
-	printf("            	    |    Assento Especial ...........: %s            \n", participant[i+1].assento_especial);
-	printf("            	    |    Assento Reservado ...........: %d           \n", participant[i+1].assento_reservado);
-	printf("            	    |    Data atual do sistema e: %s                 \n", participant[i+1].dateStr);
-	printf("            	    |    Hora atual do sistema e: %s                 \n", participant[i+1].timeStr);
-	printf("            		+------------------------------------------------+\n");
-
-	getch();
-	//return(0);
-	//system("cls");
-}
 
 //Listar todos os assentos
 //findBySeat()
-listAllSeat()
+//listAllSeat()
+
+zerarAssento()
+{
+     for(l=0; l<=8; l++)
+    {
+        for(c=0; c<=19; c++)
+        {
+            if( sP[l][c].assento_reservado != NULL)
+            {
+                sP[l][c].assento_reservado = 0;
+            }
+            else
+            {
+                sP[l][c].assento_reservado = 0;
+            }
+        }
+    }
+}
+
+
+struct participant Aux;
+struct participant *aux = &Aux;
+// OP == 1
+int incluir_visitante()
+{
+    getchar();
+    system("cls");
+
+    //struct participant *aux;
+
+    cadParticipant( &aux);
+    //sP[]
+
+    getch();
+    system("cls");
+	printf("\t+------------------------------------------------+\n");
+	printf("\t|           Ticket Informativo                   |\n");
+	printf("\t+------------------------------------------------+\n");
+    printf("\t|    Codigo do Participante .....: %d             \n", sP[l+1][c+1].cod_visitante);
+	printf("\t|    B ...........: %s                            \n", sP[l+1][c+1].b);
+	printf("\t|    Nome ...........: %s                         \n", sP[l+1][c+1].nome);
+	printf("\t|    Data de nascimento .....: %d                 \n", sP[l+1][c+1].data_nasc);
+	printf("\t|    Sexo ...........: %s                         \n", sP[l+1][c+1].sexo);
+	printf("\t|    RG .....: %d                                 \n", sP[l+1][c+1].rg);
+	printf("\t|    Email ...........: %s                        \n", sP[l+1][c+1].email);
+	printf("\t|    Convidado .....: %s                          \n", sP[l+1][c+1].convidado);
+	printf("\t|    Assento Especial ...........: %s             \n", sP[l+1][c+1].assento_especial);
+	printf("\t|    Assento Reservado ...........: %d            \n", sP[l+1][c+1].assento_reservado);
+	printf("\t|    Data atual do sistema e: %s                  \n", sP[l+1][c+1].dateStr);
+	printf("\t|    Hora atual do sistema e: %s                  \n", sP[l+1][c+1].timeStr);
+	printf("\t+------------------------------------------------+\n");
+	getch();
+
+    return re_opcao;
+}
+// OP == 2
+int excluir_visitante()
+{
+    getch();
+    system("cls");
+
+    return re_opcao;
+}
+// OP == 3
+int lista_assentos_livres()
+{
+    //if(re_opcao == 1)
+    getch();
+    system("cls");
+        //listAllSeat();
+}
+// OP == 4
+int lista_assentos_ocupados()
+{
+    getch();
+    system("cls");
+}
+// OP == 5
+lista_tds_assentos()
 {
     int seat;
     //printf("Digite o numero do assento: \n");
     //scanf("%d", &seat);
 
-    for(i=0; i<10; i++)
+    for(l=0; l<=8; l++)
     {
-        if(participant[i].assento_reservado != 0)
+        for(c=0; c<=19; c++)
         {
-            printf("\n%d: Ocupado", participant[i+1].assento_reservado);
-        }
-        else
-        {
-            printf("\n%d: Livre", participant[i+1].assento_reservado);
+            if(sP[l][c].assento_reservado != NULL)
+            {
+                printf("\n%d: Ocupado\t", sP[l+1][c+1].assento_reservado);
+            }
+            else
+            {
+                printf("%d: Livre\t", sP[l+1][c+1].assento_reservado);
+            }
         }
     }
 
-int columns, rows, number;
-rows =1;
-
-do{
-    columns=0;
-    do{
-        printf("%d\t", columns*10+rows);
-
-    }while(columns++ <9);
-    printf("\n");
-
-}while(rows++ <10);
-
-    return 0;
+    printf("%d ", sizeof(sP)/sizeof(int));
+    printf("\nTecle Enter para Continuar...");
+    getch();
 }
 
 
-verifyEmpty()
+int cadParticipant(struct participant *aux)
 {
+    printf("\nNome                ==> ");
+    fgets(aux->nome, 256, stdin);
+    //scanf ( "%256[^\n]", str);
+    //scanf ( "%[^\n]", aux->nome);
+    //printf("\nteste\n");
+    printf("\nData de nascimento  ==> ");
+    fgets(aux->data_nasc, 256, stdin);
+    printf("\Sexo                 ==> ");
+    fgets(aux->sexo, 256, stdin);
+    printf("\RG                   ==> ");
+    fgets(aux->rg, 256, stdin);
+    printf("\nEmail               ==> ");
+    fgets(aux->email, 256, stdin);
+    printf("\nConvidado           ==> ");
+    scanf("%d", &aux->convidado);
+    printf("\nAssento Especial    ==> ");
+    scanf("%d", &aux->assento_especial);
+    printf("\nAssento Reservado   ==> ");
+    scanf("%d", &aux->assento_reservado);
 
+    aux->b = 10;
+    aux->assento_reservado = 10;
+
+    //(*aux).nome = {0 => 'j', 1 => 'i', 2 => 'm', 3 => 'm', 4 => 'y'};
+    printf("\n%s", aux->nome);
+    printf("Data de nascimento ==> \n");
+    printf("Data de nascimento ==> \n");
+    printf("Data de nascimento ==> \n");
+    printf("Data de nascimento ==> \n");
+    printf("Data de nascimento ==> \n");
+    printf("Data de nascimento ==> \n");
+    printf("Data de nascimento ==> \n");
+
+    system("PAUSE");
 }
+
