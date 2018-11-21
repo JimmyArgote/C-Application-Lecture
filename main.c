@@ -20,9 +20,7 @@
 #define SAIR             5  //OP Sair
 
 /*capacidade de assentos na palestra*/
-#define QTD_L       8  /* LINHAS */
-#define QTD_C      19 /* Colunas */
-const int QTD_TT = ( (QTD_L+1) * (QTD_C+1) );
+#define QTD_TT 179
 //typedef struct administrator Admin;
 //login
 typedef struct
@@ -33,12 +31,13 @@ typedef struct
 }administrator;
     //struct administrator admin;
 
-    int i, op, num_seat, flag, re_opcao, l, c;
+    int i, op, num_seat, flag, re_opcao, l, c, o, s;
     /*Criando a struct */
 typedef struct participant
 {
     int     b;
     int     flag;
+    int     free;
     int     adm;
     int     cod_visitante;
     char    nome[50];
@@ -46,14 +45,14 @@ typedef struct participant
     char    sexo[20];
     char    rg[20];
     char    email[30];
-    int     convidado; //convidado -> sim ou n?o (m?ximos 10 convidados)
-    int     assento_especial; //Lugar especial -> sim ou n?o (m?ximos 3)
+    char    convidado[3]; //convidado -> sim ou nao (maximos 10 convidados)
+    char    assento_especial[3]; //Lugar especial -> sim ou nao (maximos 3)
     int     assento_reservado;
 	char    dateStr[9];
     char    timeStr[9];
 }participant;
     //(S)TRUCT (P)ARTICIPANT sP => struct-matriz do tipo participant
-    struct participant sP[QTD_L][QTD_C];
+    struct participant sP[QTD_TT];
 
     struct participant Aux;
     struct participant *aux = &Aux;
@@ -66,7 +65,7 @@ char getAuthParams(char l, char password)
 {
 }
 void lista_tds_assentos(void);
-void zerarAssento(void);
+void zerarAssentos(void);
 
 int main(void)
 {
@@ -75,10 +74,10 @@ int main(void)
     administrator Admin;
     administrator *pAdmin = &Admin;
 
-    zerarAssento();
+    zerarAssentos();
 
-    strcpy(pAdmin->login, "j");
-    strcpy(pAdmin->password, "j");
+    strcpy(pAdmin->login, "");
+    strcpy(pAdmin->password, "");
 
     pAdmin->attempts = 0;
 
@@ -87,14 +86,23 @@ int main(void)
         //ENQUANTO NUMERO DE TENTATIVAS FOR MENOR OU IGUAL A 3 ? REPITA
         while(pAdmin->attempts <= 3)
         {
-            printf("+-----------------------------------------------------------------------------+\n");
-            printf("|                                 FACA LOGIN                                  |\n");
-            printf("+-----------------------------------------------------------------------------+\n");
-            printf("\nDigite seu Login ==> ");
+            printf("\t\t+-----------------------------------------------------------------------------+\n");
+            printf("\t\t|                                 FACA LOGIN                                  |\n");
+            printf("\t\t+-----------------------------------------------------------------------------+\n");
+            printf("\n\t\tDigite seu Login ==> ");
             fflush(stdin);
             gets(login);
-            printf("\nDigite sua Senha ==> ");
-            gets(password);
+            printf("\n\t\tDigite sua Senha ==> ");
+
+            s = strlen(pAdmin->password);
+            fflush(stdin);
+            for (i=0;i<=(s-1);i++) 
+            {
+                password[i] = getch();
+                putchar('*');
+            }
+            printf("\n");
+            password[i]='\0';
 
             //RETORNA 0 SE AS STRINGS SÃO IGUAIS
             authLogin = strcmp(login, pAdmin->login);
@@ -113,7 +121,7 @@ int main(void)
                         int re_opcao;
                         //if(isdigit)
                         op = menu_inicial(); // se autenticado chama a funcao menu
-                        
+
                         switch(op)
                         {
                             case 1 :
@@ -129,34 +137,35 @@ int main(void)
 	                                        case 1 :
 	                                                incluir_visitante();
 	                                            break;
-	
+
 	                                        case 2 :
 	                                                excluir_visitante();
 	                                            break;
-	
+
 	                                        case 3 :
 	                                                lista_assentos_livres();
 	                                            break;
-	
+
 	                                        case 4 :
 	                                                lista_assentos_ocupados();
 	                                            break;
-	
+
 	                                        case 5 :
 	                                                lista_tds_assentos();
 	                                            break;
-	
+
 	                                        case 6 :
 	                                            system("cls");
 	                                            // retornar ao menu inicial
 	                                            continue;
-	
+
 	                                        default :
 	                                        printf("\nOpcao Invalidada!\n");
 	                                        getch();
 	                                        system("cls");
-	                                        
+
 	                                    } //switch(re_opcao) MENU DE VISITANTE
+
                                		}while(re_opcao != 6);
 
                                 //getch();
@@ -200,12 +209,12 @@ int main(void)
                 //if((authLogin > 0) || (authPassword > 0) || (authLogin < 0) || (authPassword < 0))
                 if((authLogin != 0) || (authPassword != 0))
                 {
-                    printf("\nLogin ou senha incorretos!\n");
+                    printf("\n\t\tLogin ou senha incorretos!\n");
                     getch();
                     //system("cls");
                 }
 
-                printf("\nTentativas: %d", pAdmin->attempts);
+                printf("\n\t\tTentativas: %d", pAdmin->attempts);
                 getch();
                 system("cls");
             } // Errou SENHA
@@ -213,13 +222,13 @@ int main(void)
             //se o numero de tentativas for = 3 entao esperar 30 segundos para tentar novamente
             if(pAdmin->attempts == ATTEMPS)
             {
-                printf("\nVoce errou nas %d tentativas!\n", pAdmin->attempts);
-                printf("Espere %d Segundo para tentar novamente!!!\n", TIMEOUT);
+                printf("\n\t\tVoce errou nas %d tentativas!\n", pAdmin->attempts);
+                printf("\t\tEspere %d Segundo para tentar novamente!!!\n", TIMEOUT);
 
                 Sleep(TIME_SLEEP);
                 if(timeout(TIMEOUT) == 0)
                 {
-                    printf("\nTempo finalizado.\n");
+                    printf("\n\t\tTempo finalizado.\n");
                 }
 
                 pAdmin->attempts = 0;
@@ -234,19 +243,16 @@ int main(void)
 } // MAIN METODO PRINCIPAL
 
 
-void zerarAssento(void)
+void zerarAssentos(void)
 {
     i=0;
     fflush(stdin);
-     for(l=0; l<=QTD_L; l++)
+     for(i=0; i<=QTD_TT; i++)
     {
-        for(c=0; c<=QTD_C; c++)
-        {
-            sP[l][c].assento_reservado = 0;
-            i++;
-        }
+        sP[i].assento_reservado = 0;
+        l++;
     }
-    printf("\nAssentos zerados = %d\n", i);
+    printf("\n\t\tAssentos zerados = %d\n", l);
 }
 
 // OP == 1
@@ -276,22 +282,18 @@ int lista_assentos_livres()
     system("cls");
     system("color 0B");
 
-    for(l=0; l<=QTD_L; l++)
+    for(i=0; i<=QTD_TT; i++)
     {
-        for(c=0; c<=QTD_C; c++)
+        if (sP[i].assento_reservado == 0 )
         {
-            i++;
-            if (sP[l][c].assento_reservado == 0 )
-            {
-                printf(" %03d:L\t", i);
-            }
-
+            printf(" %03d:L\t", i+1);
+            l++;
         }
     }
     printf("\nTecle Enter para Continuar...");
     getch();
     system("color 0F");
-    
+
     return re_opcao;
 }
 // OP == 4
@@ -303,36 +305,24 @@ lista_assentos_ocupados(void)
     system("cls");
     system("color 0C");
 
-    for(l=0; l<=QTD_L; l++)
+    for(i=0; i<=QTD_TT; i++)
     {
-        for(c=0; c<=QTD_C; c++)
+        if (sP[i].assento_reservado > 0 )
         {
-            i++;
-            if (sP[l][c].assento_reservado > 0 )
-            {
-                printf(" %03d:O\t", i);
-            }
-            else
-            {
-                i = 0;
-            }
-
+            printf(" %03d:O\t", i+1);
+            l++;
         }
     }
-    if (i==0)
-        printf("\nNao ha assentos ocupados.\n");
+    if (l == 0)
+        printf("\nNAO HA ASSENTO(S) OCUPADO(S).\n");
     getch();
     system("color 0F");
-    
+
     return re_opcao;
 }
 // OP == 5
 lista_tds_assentos(void)
 {
-    int seat;
-    //printf("Digite o numero do assento: \n");
-    //scanf("%d", &seat);
-
     //system("color 1F");
     //background(GREEN);
     system("cls");
@@ -344,64 +334,42 @@ lista_tds_assentos(void)
     //background(GREEN);
     printf("Assentos OCUPADOS estao com letra: O\n\n");
     //style(RESETALL);
-
-    i=0;l=0;c=0;
-    for(l=0; l<=QTD_L; l++)
+    i=0;l=0;
+    for(i=0; i<=QTD_TT; i++)
     {
         //for(int a='A';a!='Z';a++)printf("%c ",a);
-        for(c=0; c<=QTD_C; c++)
+        if(sP[i].assento_reservado == 0)
         {
-            i++;
-            if(sP[l][c].assento_reservado != 0)
-            {
-                //printf("\n%d:O\t", sP[l+1][c+1].assento_reservado);
-                //incremento para linha com valor > 0
-                //i++;
-                //system("color 0C");
-                printf(" %03d:O\t", i);
-                //printf(ANSI_COLOR_RED " %03d:O\t" ANSI_COLOR_RESET, i);
-            }
-            else
-            {
-                i--;
-                if(sP[l][c].assento_reservado == 0)
-                {
-                    //decremento para linha com valor == 0
-
-                    //printf("%d:L\t", sP[l+1][c+1].assento_reservado);
-                    //incremento para linha com valor == 0
-                    i++;
-                    //system("color 0B");
-                    printf(" %03d:L\t", i);
-                    //printf(ANSI_COLOR_GREEN " %03d:L\t" ANSI_COLOR_RESET, i);
-                }
-                else
-                {
-                    i++;
-                    //system("color 0C");
-                    printf(" %03d:O\t", i);
-                    //printf(ANSI_COLOR_RED " %03d:O\t" ANSI_COLOR_RESET, i);
-                }
-            }
-            //incremento para coluna
+            //contagem de assentos livres
+            l++;
+            //system("color 0B");
+            printf(" %03d:L\t", i+1);
+            //printf(ANSI_COLOR_GREEN " %03d:L\t" ANSI_COLOR_RESET, i);
+        }
+        else
+        {
+            //contagem de assentos ocupados
+            o++;
+            //system("color 0C");
+            printf(" %03d:O\t", i+1);
+            //printf(ANSI_COLOR_RED " %03d:O\t" ANSI_COLOR_RESET, i);
         }
     }
 
-    //printf("%d ", sizeof(sP)/sizeof(int));
+    printf("\n\t\t\t\t%d ASSENTO(S) OCUPADO(S) \t%d ASSENTO(S) LIVRE(S) \n\n", o, l);
+    o=0;l=0;
     printf("\nTecle Enter para Continuar...");
     getch();
     system("color 0F");
-    
+
     return re_opcao;
 }
 
 //verifica e cadastra participante
 int cadParticipant(struct participant *aux)
 {
-    int v[3];
-    //int y=0,x=0;
+    lista_tds_assentos();
     printf("\nPreencha seus dados:");
-    getch();
     printf("\nNome                ==> ");
     //fgets(aux->nome, 50, stdin);
     fflush(stdin);
@@ -409,104 +377,96 @@ int cadParticipant(struct participant *aux)
     printf("\nData de Nasc ex.: 00/00/00 ==> ");
     gets(aux->data_nasc);
     //fgets(aux->data_nasc, 20, stdin);
-    printf("\nSexo                 ==> ");
+    printf("\nSexo \t\t==> ");
     gets(aux->sexo);
     //fgets(aux->sexo, 20, stdin);
-    printf("\nRG                   ==> ");
+    printf("\nRG \t\t==> ");
     gets(aux->rg);
     //fgets(aux->rg, 20, stdin);
-    printf("\nEmail               ==> ");
+    printf("\nEmail \t\t==> ");
     gets(aux->email);
     //fgets(aux->email, 30, stdin);
-    printf("\nConvidado           ==> ");
-    scanf("%d", &aux->convidado);
-    printf("\nAssento Especial(S/N)    ==> ");
-    scanf("%d", &aux->assento_especial);
+    printf("\nConvidado (S/N) \t==> ");
+    fgets(aux->convidado, 3, stdin);
+    printf("\nAssento Especial(S/N) \t==> ");
+    fgets(aux->assento_especial, 3, stdin);
+    /*
+    
+    do
+    {
+        fflush(stdin);
+        printf("\nConvidado (S/N) \t==> ");
+        scanf("%s", &aux->convidado);
+        if(isupper(aux->convidado))
+        {
+            tolower(*aux->convidado);
+        }
+
+    }while( (aux->convidado != 's' ) || (aux->convidado != 'n') );
+    do
+    {
+        printf("\nAssento Especial(S/N) \t==> ");
+        scanf("%s", &aux->assento_especial);
+    }while(aux->assento_especial != 's');
+
+    */
 
     i=0;l=0;c=0;
     //lista_tds_assentos(); ENCONTRAR ERRO
+
     do
     {
-
-        do
+        printf("\nEscolha um assento:   ==> ");
+        scanf("%d", &aux->assento_reservado);
+        num_seat = aux->assento_reservado;
+        if( !(isdigit(aux->assento_reservado)) )
         {
-            printf("\nEscolha um assento:   ==> ");
-            scanf("%d", &aux->assento_reservado);
-        }while( (!isdigit(aux->assento_reservado)) && ( (aux->assento_reservado < 1) || ( (aux->assento_reservado > (QTD_TT) ) ) ) );
-        //while( !(isdigit(aux->assento_reservado)) && (aux->assento_reservado <) );
-
-        // pega a data atual
-         _strdate(  aux->dateStr );
-        // pega a hora atual
-        _strtime( aux->timeStr );
-
-        for(l=0; l<=QTD_L; l++)
-        {
-            //i++;
-            if (i==0)
-                i++;
-            //printf("\n%d\t", l);
-            //printf("\n%d\t", i);
-            if (i == 1)
-                i--;
-            for(c=0; c<=QTD_C; c++)
-            {
-                //sP[l][c].assento_reservado = 0;
-                i++;
-                //if(aux->assento_reservado == i)
-                //printf("%d\t", c);
-                //printf("%d\t", i);
-                if(i == aux->assento_reservado)
-                {
-                    if( (sP[l][c].assento_reservado) == (aux->assento_reservado) )
-                    {
-                        v[3] = 0, 0, 0;
-                        v[0] = i; //indices percorridos equivalente ao numero do assento digitado pelo usuario
-                        v[1] = l; //numero do indice
-                        v[2] = c;
-                        printf("\nO lugar esta Ocupado!\n");
-                        printf("***********************\n");
-                        //printf("assento = %d\t linha = %d\t coluna = %d\n", aux->assento_reservado, l, c);
-                        getch();
-                    }
-                    else
-                    {
-                        //sP[l][c].assento_reservado = aux->assento_reservado;
-                        sP[l][c] = *aux;
-                        //getch();
-                        system("cls");
-                        system("color 1F");
-                        printf("\t+------------------------------------------------+\n");
-                        printf("\t|           Ticket Informativo                   |\n");
-                        printf("\t+------------------------------------------------+\n");
-                        printf("\t|    Codigo do Participante .....: %d             \n", sP[l][c].cod_visitante);
-                        printf("\t|    B ...........: %d                            \n", sP[l][c].b);
-                        printf("\t|    Nome ...........: %s                         \n", sP[l][c].nome);
-                        printf("\t|    Data de nascimento .....: %s                 \n", sP[l][c].data_nasc);
-                        printf("\t|    Sexo ...........: %s                         \n", sP[l][c].sexo);
-                        printf("\t|    RG .....: %s                                 \n", sP[l][c].rg);
-                        printf("\t|    Email ...........: %s                        \n", sP[l][c].email);
-                        printf("\t|    Convidado .....: %d                          \n", sP[l][c].convidado);
-                        printf("\t|    Assento Especial ...........: %d             \n", sP[l][c].assento_especial);
-                        printf("\t|    Assento Reservado ...........: %d            \n", sP[l][c].assento_reservado);
-                        printf("\t|    Data atual do sistema e: %s                  \n", sP[l][c].dateStr);
-                        printf("\t|    Hora atual do sistema e: %s                  \n", sP[l][c].timeStr);
-                        printf("\t+------------------------------------------------+\n");
-                        printf("\nTecle Enter para Continuar...");
-                        getch();
-                        system("cls");
-                        system("color 0F");
-                    }
-                }
-            }
+            printf("\n\t\tDIGITE SOMENTE NUMEROS! ");
+            getch();
+            system("cls");
         }
-            //printf("\nTecle Enter para Continuar...");
-            //printf("\nI = Assento %d\n", v[0]);
-            //printf("L = Linha %d\n", v[1]);
-            //printf("C = Coluns %d\n", v[2]);
-            //getch();
+        if( (num_seat) == (sP[num_seat-1].assento_reservado) )
+        {
+            printf("\n\t\tO NUMERO DE ASSENTO REQUISITADO ESTA OCUPADO! \n");
+            printf("***********************\n");
+            getch();
+            system("cls");
+        }
 
-    }while( (aux->assento_reservado) == (sP[v[1]][v[2]].assento_reservado) );
+    }while( (!isdigit(aux->assento_reservado) && (aux->assento_reservado == sP[num_seat-1].assento_reservado) ) && ( (aux->assento_reservado < 1) || ( (aux->assento_reservado > (QTD_TT+1) ) ) ) );
+
+    // pega a data atual
+     _strdate(  aux->dateStr );
+    // pega a hora atual
+    _strtime( aux->timeStr );
+
+    sP[num_seat-1] = *aux;
+    //getch();
+    system("cls");
+    system("color 1F");
+    printf("\n");
+    printf("\t\t\t+------------------------------------------------+\n");
+    printf("\t\t\t|           Ticket Informativo                   |\n");
+    printf("\t\t\t+------------------------------------------------+\n");
+    printf("\t\t\t|    Codigo do Participante .....: %d \n", sP[num_seat-1].cod_visitante);
+    printf("\t\t\t|    B ..........................: %d \n", sP[num_seat-1].b);
+    printf("\t\t\t|    Nome .......................: %s \n", sP[num_seat-1].nome);
+    printf("\t\t\t|    Data de nascimento .........: %s \n", sP[num_seat-1].data_nasc);
+    printf("\t\t\t|    Sexo .......................: %s \n", sP[num_seat-1].sexo);
+    printf("\t\t\t|    RG .........................: %s \n", sP[num_seat-1].rg);
+    printf("\t\t\t|    Email ......................: %s \n", sP[num_seat-1].email);
+    printf("\t\t\t|    Convidado ..................: %s \n", sP[num_seat-1].convidado);
+    printf("\t\t\t|    Assento Especial ...........: %s \n", sP[num_seat-1].assento_especial);
+    printf("\t\t\t|    Assento Reservado ..........: %d \n", sP[num_seat-1].assento_reservado);
+    printf("\t\t\t|    Data atual do sistema ......: %s \n", sP[num_seat-1].dateStr);
+    printf("\t\t\t|    Hora atual do sistema ......: %s \n", sP[num_seat-1].timeStr);
+    printf("\t\t\t+------------------------------------------------+\n");
+    printf("\nTecle Enter para Continuar...");
+    getch();
+    system("cls");
+    system("color 0F");
 
     return re_opcao;
 }
+
+
