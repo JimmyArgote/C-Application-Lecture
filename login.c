@@ -4,19 +4,15 @@
 /* função de atenticação*/
 
 //#define CLOCKS_PER_SEC 10
-
-
 int timeout ( int seconds )
 {
     clock_t endwait;
     endwait = clock () + seconds * CLOCKS_PER_SEC ;
     while (clock() < endwait) {
-        //remaining(seconds);
     }
 
     return 1;
 }
-
 
 remaining(int seconds )
 {
