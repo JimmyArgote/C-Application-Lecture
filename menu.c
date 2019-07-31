@@ -1,4 +1,3 @@
-
 //formataca o de tela
 void imprimechar(int n, char c)
 {
@@ -13,11 +12,12 @@ void imprimechar(int n, char c)
 void imprime(int n, char c)
 {
 	int i;
-    printf("\n\t");
-    for(i=0; i<=(n); i++)
+    printf("\n\t\t\t\t\t\t");
+    for(i=0; i<=(n*3); i++)
     {
         putchar(c);
     }
+    printf("\n");
 }
 
 int re_opcao;
@@ -25,41 +25,43 @@ int re_opcao;
 int menu_inicial()
 {
     system("cls");
-    char *a = " BEM VINDO ADMINISTRADOR! ";
+    char *a = "\t\t\t\t\t\t\t\t BEM VINDO ADMINISTRADOR! ";
     register int b = 0;
     b = strlen(a);
-    imprimechar(b, '*');
+    imprimechar(45, '*');
     imprime(b, ' ');
     printf("%s\n", a);
-    imprimechar(b, '*');
+    imprimechar(45, '*');
 
-    imprimechar(16, '-');
-    printf("\t|\t1- Gerenciar Participante       ==> \t|\t\n");
-    printf("\t|\t2- Gerenciar Convidado          ==> \t|\t\n");
-    printf("\t|\t3- Gerenciar Fazer o Sorteio    ==> \t|\t\n");
-    printf("\t|\t4- Gerenciar Enviar Email       ==> \t|\t\n");
-    printf("\t|\t5- Sair                         ==> \t|\t");
-    imprimechar(16, '-');
-    printf("\t\t");
-    scanf("%d", &re_opcao);
-    printf("\n\t\t%d", re_opcao);
-    //getch();
+    printf("\n\n");
+    imprime(16, '-');
+    printf("\t\t\t\t\t\t|\t 1- Gerenciar Participante       ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 2- Preencher Assentos(teste)    ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 3- Fazer o Sorteio              ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 4- Enviar Email                 ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 5- Sair                         ==> \t|\t");
+    imprime(16, '-');
 
+    printf("\t\t\t\t\t\t Escolha uma opcao:           ==>  ");
+    scanf("\n\t\t\t\t\t\t%d", &re_opcao);
     return re_opcao;
 }
-
 
 int menu_visitante()
 {
     system("cls");
-    printf("\t|\t1- Incluir Visitante        ==> \n");
-    printf("\t|\t2- Excluir Visitante        ==> \n");
-    printf("\t|\t3- Listar Lugares Livres    ==> \n");
-    printf("\t|\t4- Listar Lugares Ocupado   ==> \n");
-    printf("\t|\t5- Listar Todos os Lugares  ==> \n");
-    printf("\t|\t6- Retornar ao Menu Inicial ==> \n");
-    scanf("%d", &re_opcao);
-    //printf("\n%d", re_opcao);
-
+    imprimechar(40, '-');
+    printf("\n\t\t\t\t\t\t\t\tMENU INICIAL\n");
+    imprimechar(40, '-');
+    imprime(16, '-');
+    printf("\t\t\t\t\t\t|\t 1- Incluir Visitante        ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 2- Excluir Visitante        ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 3- Listar Lugares Livres    ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 4- Listar Lugares Ocupado   ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 5- Listar Todos os Lugares  ==> \t|\t\n");
+    printf("\t\t\t\t\t\t|\t 6- Retornar ao Menu Inicial ==> \t|\t");
+    imprime(16, '-');
+    printf("\t\t\t\t\t\t Escolha uma opcao:       ==>  ");
+    scanf("\n\t\t\t\t\t\t%d", &re_opcao);
     return re_opcao;
 }
