@@ -44,7 +44,7 @@ typedef struct participant
     char    convidado[3]; //convidado -> sim ou nao (maximos 10 convidados)
     char    assento_especial[3]; //Lugar especial -> sim ou nao (maximos 3)
     int     assento_reservado;
-	char    dateStr[9];
+    char    dateStr[9];
     char    timeStr[9];
 }participant;
     //(S)TRUCT (P)ARTICIPANT sP => struct-matriz do tipo participant
